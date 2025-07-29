@@ -15,7 +15,8 @@ class Formatters {
 
     private init() {
         measurementFormatter = MeasurementFormatter()
-        measurementFormatter.unitOptions = .providedUnit
+        measurementFormatter.unitOptions = .naturalScale
+        measurementFormatter.numberFormatter.maximumFractionDigits = 2
         measurementFormatter.unitStyle = .medium
 
         dateComponentsFormatter = DateComponentsFormatter()
@@ -32,8 +33,8 @@ class Formatters {
         return dateComponentsFormatter.string(from: duration)
     }
 
-    func format(pace: Double, distance: Double) -> String {
-        let speed = Measurement(value: duration / distance, unit: UnitSpeed.secondsPerMeter)
+    func format(duration: Double, distance: Double) -> String {
+        let speed = Measurement(value: distance / duration, unit: UnitSpeed.metersPerSecond)
         return measurementFormatter.string(from: speed)
     }
 }

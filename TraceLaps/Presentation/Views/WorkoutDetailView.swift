@@ -51,7 +51,7 @@ struct WorkoutDetailView: View {
                 HStack {
                     Text("Average Pace:")
                         .font(.headline)
-                    Text(Formatters.shared.format(pace: workout.duration, distance: workout.distance))
+                    Text(Formatters.shared.format(duration: workout.duration, distance: workout.distance))
                         .font(.subheadline)
                 }
             }
@@ -60,91 +60,5 @@ struct WorkoutDetailView: View {
             Spacer()
         }
         .navigationTitle("Workout Detail")
-    }
-}
-
-struct MapView: UIViewRepresentable {
-    let locations: [WorkoutLocation]
-
-    func makeUIView(context: Context) -> MKMapView {
-        MKMapView(frame: .zero)
-    }
-
-    func updateUIView(_ uiView: MKMapView, context: Context) {
-        guard !locations.isEmpty else { return }
-
-        uiView.delegate = context.coordinator
-
-        uiView.removeOverlays(uiView.overlays)
-        uiView.removeAnnotations(uiView.annotations)
-
-        let coordinates = locations.map { CLLocationCoordinate2D(latitude: $0.latitude, longitude: $0.longitude) }
-        let polyline = MKPolyline(coordinates: coordinates, count: coordinates.count)
-
-        uiView.addOverlay(polyline)
-
-        guard let startLocation = locations.first, let endLocation = locations.last else {
-            return
-        }
-
-        let startPin = MKPointAnnotation()
-        startPin.title = "Start"
-        startPin.coordinate = CLLocationCoordinate2D(latitude: startLocation.latitude, longitude: startLocation.longitude)
-        uiView.addAnnotation(startPin)
-
-        let endPin = MKPointAnnotation()
-        endPin.title = "Finish"
-        endPin.coordinate = CLLocationCoordinate2D(latitude: endLocation.latitude, longitude: endLocation.longitude)
-        uiView.addAnnotation(endPin)
-
-        uiView.setVisibleMapRect(polyline.boundingMapRect, edgePadding: UIEdgeInsets(top: 50, left: 50, bottom: 50, right: 50), animated: true)
-    }
-
-    func makeCoordinator() -> Coordinator {
-        Coordinator(self)
-    }
-
-    class Coordinator: NSObject, MKMapViewDelegate {
-        var parent: MapView
-
-        init(_ parent: MapView) {
-            self.parent = parent
-        }
-
-        func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
-            if let polyline = overlay as? MKPolyline {
-                let renderer = MKPolylineRenderer(polyline: polyline)
-                renderer.strokeColor = .blue
-                renderer.lineWidth = 5
-                return renderer
-            }
-            return MKOverlayRenderer()
-        }
-
-        func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
-            if annotation is MKUserLocation {
-                return nil
-            }
-
-            let identifier = "Pin"
-            var annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: identifier)
-
-            if annotationView == nil {
-                annotationView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: identifier)
-                annotationView?.canShowCallout = true
-            } else {
-                annotationView?.annotation = annotation
-            }
-
-            if let pinAnnotationView = annotationView as? MKPinAnnotationView {
-                if annotation.title == "Start" {
-                    pinAnnotationView.pinTintColor = .green
-                } else if annotation.title == "Finish" {
-                    pinAnnotationView.pinTintColor = .red
-                }
-            }
-
-            return annotationView
-        }
     }
 }
