@@ -75,6 +75,9 @@ struct MapView: UIViewRepresentable {
 
         uiView.delegate = context.coordinator
 
+        uiView.removeOverlays(uiView.overlays)
+        uiView.removeAnnotations(uiView.annotations)
+
         let coordinates = locations.map { CLLocationCoordinate2D(latitude: $0.latitude, longitude: $0.longitude) }
         let polyline = MKPolyline(coordinates: coordinates, count: coordinates.count)
 
