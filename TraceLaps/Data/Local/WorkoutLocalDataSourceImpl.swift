@@ -16,6 +16,9 @@ struct WorkoutLocalDataSourceImpl: WorkoutLocalDataSource {
         do {
             self.modelContainer = try ModelContainer(for: Workout.self)
             self.modelContext = ModelContext(modelContainer)
+            #if DEBUG
+            try modelContext.delete(model: Workout.self)
+            #endif
         } catch {
             fatalError(error.localizedDescription)
         }
