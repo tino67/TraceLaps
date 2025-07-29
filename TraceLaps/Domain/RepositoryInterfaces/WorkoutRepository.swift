@@ -1,0 +1,13 @@
+//
+//  WorkoutRepository.swift
+//  TraceLaps
+//
+//  Created by Jules on 29/07/2025.
+//
+
+import Foundation
+
+protocol WorkoutRepository {
+    func getWorkouts() async throws -> [Workout]
+    func saveWorkout(_ workout: Workout) async throws
+}
