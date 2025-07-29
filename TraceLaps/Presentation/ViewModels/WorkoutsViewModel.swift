@@ -76,6 +76,7 @@ class WorkoutsViewModel: ObservableObject {
                     duration: hkWorkout.duration,
                     distance: hkWorkout.totalDistance?.doubleValue(for: .meter()) ?? 0,
                     calories: hkWorkout.totalEnergyBurned?.doubleValue(for: .kilocalorie()) ?? 0,
+                    type: WorkoutType(hkWorkoutActivityType: hkWorkout.workoutActivityType),
                     locations: locations.map { .init(from: $0) }
                 )
                 try await saveWorkoutUseCase.call(workout)

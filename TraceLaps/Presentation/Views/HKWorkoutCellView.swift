@@ -13,14 +13,17 @@ struct HKWorkoutCellView: View {
     let isSelected: Bool
     let isSaved: Bool
     let action: () -> Void
+    private let getHKWorkoutTypeInfoUseCase: GetHKWorkoutTypeInfoUseCase = GetHKWorkoutTypeInfo()
 
     var body: some View {
+        let workoutInfo = getHKWorkoutTypeInfoUseCase.call(for: workout.workoutActivityType)
+
         HStack {
-            Image(systemName: workout.workoutActivityType.symbol)
+            Image(systemName: workoutInfo.symbol)
                 .font(.title)
                 .foregroundColor(isSaved ? .gray : .accentColor)
             VStack(alignment: .leading) {
-                Text(workout.workoutActivityType.name)
+                Text(workoutInfo.name)
                     .font(.headline)
                 Text(workout.endDate, style: .date)
                     .font(.subheadline)
@@ -49,30 +52,3 @@ struct HKWorkoutCellView: View {
     }
 }
 
-extension HKWorkoutActivityType {
-    var name: String {
-        switch self {
-        case .running:
-            return "Running"
-        case .walking:
-            return "Walking"
-        case .cycling:
-            return "Cycling"
-        default:
-            return "Workout"
-        }
-    }
-
-    var symbol: String {
-        switch self {
-        case .running:
-            return "figure.run"
-        case .walking:
-            return "figure.walk"
-        case .cycling:
-            return "figure.bike"
-        default:
-            return "figure.walk"
-        }
-    }
-}
