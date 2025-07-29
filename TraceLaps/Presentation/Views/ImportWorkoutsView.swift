@@ -18,7 +18,7 @@ struct ImportWorkoutsView: View {
     var body: some View {
         NavigationView {
             List(viewModel.healthKitWorkouts) { workout in
-                WorkoutCellView(workout: workout, isSelected: selectedWorkouts.contains(workout)) {
+                HKWorkoutCellView(workout: workout, isSelected: selectedWorkouts.contains(workout)) {
                     if selectedWorkouts.contains(workout) {
                         selectedWorkouts.remove(workout)
                     } else {
