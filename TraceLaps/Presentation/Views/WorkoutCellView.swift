@@ -9,14 +9,17 @@ import SwiftUI
 
 struct WorkoutCellView: View {
     let workout: Workout
+    private let getWorkoutTypeInfoUseCase: GetWorkoutTypeInfoUseCase = GetWorkoutTypeInfo()
 
     var body: some View {
+        let workoutInfo = getWorkoutTypeInfoUseCase.call(for: workout.type)
+
         HStack {
-            Image(systemName: "figure.run")
+            Image(systemName: workoutInfo.symbol)
                 .font(.title)
                 .foregroundColor(.accentColor)
             VStack(alignment: .leading) {
-                Text("Running")
+                Text(workoutInfo.name)
                     .font(.headline)
                 Text(workout.date, style: .date)
                     .font(.subheadline)
