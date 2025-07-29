@@ -17,12 +17,13 @@ struct ImportWorkoutsView: View {
 
     var body: some View {
         NavigationView {
-            List(viewModel.healthKitWorkouts, selection: $selectedWorkouts) { workout in
-                VStack(alignment: .leading) {
-                    Text("Duration: \(workout.duration)")
-                        .font(.headline)
-                    Text("Distance: \(workout.totalDistance?.doubleValue(for: .meter()) ?? 0)")
-                        .font(.subheadline)
+            List(viewModel.healthKitWorkouts) { workout in
+                WorkoutCellView(workout: workout, isSelected: selectedWorkouts.contains(workout)) {
+                    if selectedWorkouts.contains(workout) {
+                        selectedWorkouts.remove(workout)
+                    } else {
+                        selectedWorkouts.insert(workout)
+                    }
                 }
             }
             .navigationTitle("Import Workouts")
@@ -42,7 +43,6 @@ struct ImportWorkoutsView: View {
                     .disabled(selectedWorkouts.isEmpty)
                 }
             }
-            .environment(\.editMode, .constant(.active))
         }
     }
 }
