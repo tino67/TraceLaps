@@ -26,6 +26,38 @@ class HealthKitManager {
             completion(success, error)
         }
     }
+
+    func fetchWorkouts(completion: @escaping ([HKWorkout]?, Error?) -> Void) {
+        let workoutPredicate = HKQuery.predicateForWorkouts(with: .running)
+        let sortDescriptor = NSSortDescriptor(key: HKSampleSortIdentifierEndDate, ascending: false)
+
+        let query = HKSampleQuery(sampleType: .workoutType(), predicate: workoutPredicate, limit: HKObjectQueryNoLimit, sortDescriptors: [sortDescriptor]) { _, samples, error in
+            guard let workouts = samples as? [HKWorkout] else {
+                completion(nil, error)
+                return
+            }
+
+            let group = DispatchGroup()
+            var workoutsWithRoutes: [HKWorkout] = []
+
+            for workout in workouts {
+                group.enter()
+                let routeQuery = HKQuery.predicateForObjects(from: workout)
+                let routeQuerySample = HKSampleQuery(sampleType: .workoutRoute(), predicate: routeQuery, limit: 1, sortDescriptors: nil) { _, samples, error in
+                    if let route = samples?.first as? HKWorkoutRoute, error == nil {
+                        workoutsWithRoutes.append(workout)
+                    }
+                    group.leave()
+                }
+                self.healthStore.execute(routeQuerySample)
+            }
+
+            group.notify(queue: .main) {
+                completion(workoutsWithRoutes, nil)
+            }
+        }
+        healthStore.execute(query)
+    }
 }
 
 enum HealthKitError: Error {

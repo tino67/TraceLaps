@@ -46,8 +46,22 @@ class WorkoutsViewModel: ObservableObject {
             DispatchQueue.main.async {
                 if success {
                     self?.isHealthKitAuthorized = true
+                    self?.fetchWorkouts()
                 } else {
                     // Handle error or denial
+                }
+            }
+        }
+    }
+
+    private func fetchWorkouts() {
+        healthKitManager.fetchWorkouts { [weak self] workouts, error in
+            if let workouts = workouts {
+                let mappedWorkouts = workouts.map { workout in
+                    Workout(id: workout.uuid, date: workout.endDate, duration: workout.duration, distance: workout.totalDistance?.doubleValue(for: .meter()) ?? 0, calories: workout.totalEnergyBurned?.doubleValue(for: .kilocalorie()) ?? 0)
+                }
+                DispatchQueue.main.async {
+                    self?.workouts = mappedWorkouts
                 }
             }
         }
