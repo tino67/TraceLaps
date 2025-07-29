@@ -12,12 +12,15 @@ import SwiftUI
 class WorkoutsViewModel: ObservableObject {
     private let getWorkoutsUseCase: GetWorkoutsUseCase
     private let saveWorkoutUseCase: SaveWorkoutUseCase
+    private let healthKitManager = HealthKitManager()
 
     @Published var workouts: [Workout] = []
+    @Published var isHealthKitAuthorized = false
 
     init(getWorkoutsUseCase: GetWorkoutsUseCase, saveWorkoutUseCase: SaveWorkoutUseCase) {
         self.getWorkoutsUseCase = getWorkoutsUseCase
         self.saveWorkoutUseCase = saveWorkoutUseCase
+        requestHealthKitAuthorization()
     }
 
     func getWorkouts() async {
@@ -35,6 +38,18 @@ class WorkoutsViewModel: ObservableObject {
             await getWorkouts()
         } catch {
             // Handle error
+        }
+    }
+
+    private func requestHealthKitAuthorization() {
+        healthKitManager.requestAuthorization { [weak self] success, error in
+            DispatchQueue.main.async {
+                if success {
+                    self?.isHealthKitAuthorized = true
+                } else {
+                    // Handle error or denial
+                }
+            }
         }
     }
 }
