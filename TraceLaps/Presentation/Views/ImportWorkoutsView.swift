@@ -1,0 +1,48 @@
+//
+//  ImportWorkoutsView.swift
+//  TraceLaps
+//
+//  Created by Jules on 29/07/2025.
+//
+
+import SwiftUI
+import HealthKit
+
+extension HKWorkout: Identifiable { }
+
+struct ImportWorkoutsView: View {
+    @ObservedObject var viewModel: WorkoutsViewModel
+    @Environment(\.dismiss) private var dismiss
+    @State private var selectedWorkouts = Set<HKWorkout>()
+
+    var body: some View {
+        NavigationView {
+            List(viewModel.healthKitWorkouts, selection: $selectedWorkouts) { workout in
+                VStack(alignment: .leading) {
+                    Text("Duration: \(workout.duration)")
+                        .font(.headline)
+                    Text("Distance: \(workout.totalDistance?.doubleValue(for: .meter()) ?? 0)")
+                        .font(.subheadline)
+                }
+            }
+            .navigationTitle("Import Workouts")
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button("Cancel") {
+                        dismiss()
+                    }
+                }
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Save") {
+                        for workout in selectedWorkouts {
+                            viewModel.save(hkWorkout: workout)
+                        }
+                        dismiss()
+                    }
+                    .disabled(selectedWorkouts.isEmpty)
+                }
+            }
+            .environment(\.editMode, .constant(.active))
+        }
+    }
+}
