@@ -30,14 +30,14 @@ struct WorkoutDetailView: View {
                 HStack {
                     Text("Duration:")
                         .font(.headline)
-                    Text(String(format: "%.2f", workout.duration / 60))
+                    Text(Formatters.shared.format(duration: workout.duration) ?? "N/A")
                         .font(.subheadline)
                 }
 
                 HStack {
                     Text("Distance:")
                         .font(.headline)
-                    Text(String(format: "%.2f km", workout.distance / 1000))
+                    Text(Formatters.shared.format(distance: workout.distance))
                         .font(.subheadline)
                 }
 
@@ -51,7 +51,7 @@ struct WorkoutDetailView: View {
                 HStack {
                     Text("Average Pace:")
                         .font(.headline)
-                    Text(String(format: "%.2f min/km", (workout.duration / 60) / (workout.distance / 1000)))
+                    Text(Formatters.shared.format(pace: workout.duration, distance: workout.distance))
                         .font(.subheadline)
                 }
             }
