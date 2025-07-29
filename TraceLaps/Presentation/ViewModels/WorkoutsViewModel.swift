@@ -67,6 +67,8 @@ class WorkoutsViewModel: ObservableObject {
         Task {
             let existingWorkouts = try await getWorkoutsUseCase.call()
             if !existingWorkouts.contains(where: { $0.importId == hkWorkout.uuid }) {
+                let locations = try await healthKitManager.fetchRoute(for: hkWorkout)
+
                 let workout = Workout(
                     id: UUID(),
                     importId: hkWorkout.uuid,
@@ -74,7 +76,7 @@ class WorkoutsViewModel: ObservableObject {
                     duration: hkWorkout.duration,
                     distance: hkWorkout.totalDistance?.doubleValue(for: .meter()) ?? 0,
                     calories: hkWorkout.totalEnergyBurned?.doubleValue(for: .kilocalorie()) ?? 0,
-                    locations: []
+                    locations: locations.map { .init(from: $0) }
                 )
                 try await saveWorkoutUseCase.call(workout)
                 DispatchQueue.main.async {

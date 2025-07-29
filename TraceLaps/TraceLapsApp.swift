@@ -13,7 +13,7 @@ struct TraceLapsApp: App {
     static var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             Workout.self,
-            WorkoutLocation.self,
+            LocationPoint.self,
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 
