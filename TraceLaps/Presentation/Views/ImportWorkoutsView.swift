@@ -18,7 +18,7 @@ struct ImportWorkoutsView: View {
     var body: some View {
         NavigationView {
             List(viewModel.healthKitWorkouts) { workout in
-                let isSaved = viewModel.savedWorkoutIDs.contains(workout.id)
+                let isSaved = viewModel.savedWorkoutIDs.contains(workout.uuid)
                 HKWorkoutCellView(workout: workout, isSelected: selectedWorkouts.contains(workout), isSaved: isSaved) {
                     if !isSaved {
                         if selectedWorkouts.contains(workout) {
