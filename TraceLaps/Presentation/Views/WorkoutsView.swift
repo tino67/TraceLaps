@@ -15,12 +15,15 @@ struct WorkoutsView: View {
 
     var body: some View {
         NavigationStack(path: $viewModel.path) {
-            List(viewModel.workouts) { workout in
-                Button(action: {
-                    viewModel.workoutTapped(workout: workout)
-                }) {
-                    WorkoutCellView(workout: workout)
+            List {
+                ForEach(viewModel.workouts) { workout in
+                    Button(action: {
+                        viewModel.workoutTapped(workout: workout)
+                    }) {
+                        WorkoutCellView(workout: workout)
+                    }
                 }
+                .onDelete(perform: viewModel.delete)
             }
             .onAppear {
                 Task {

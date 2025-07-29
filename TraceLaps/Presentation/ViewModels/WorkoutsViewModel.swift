@@ -13,6 +13,7 @@ import HealthKit
 class WorkoutsViewModel: ObservableObject {
     private let getWorkoutsUseCase: GetWorkoutsUseCase
     private let saveWorkoutUseCase: SaveWorkout
+    private let deleteWorkoutUseCase: DeleteWorkout
     private let healthKitManager: HealthKitManager
 
     @Published var workouts: [Workout] = []
@@ -21,9 +22,15 @@ class WorkoutsViewModel: ObservableObject {
     @Published var isHealthKitAuthorized = false
     @Published var path = [MainCoordinator.Destination]()
 
-    init(getWorkoutsUseCase: GetWorkoutsUseCase, saveWorkoutUseCase: SaveWorkout, healthKitManager: HealthKitManager) {
+    init(
+        getWorkoutsUseCase: GetWorkoutsUseCase,
+        saveWorkoutUseCase: SaveWorkout,
+        deleteWorkoutUseCase: DeleteWorkout,
+        healthKitManager: HealthKitManager
+    ) {
         self.getWorkoutsUseCase = getWorkoutsUseCase
         self.saveWorkoutUseCase = saveWorkoutUseCase
+        self.deleteWorkoutUseCase = deleteWorkoutUseCase
         self.healthKitManager = healthKitManager
         requestHealthKitAuthorization()
     }
@@ -89,5 +96,19 @@ class WorkoutsViewModel: ObservableObject {
     
     func workoutTapped(workout: Workout) {
         path.append(.detail(workout))
+    }
+
+    func delete(at offsets: IndexSet) {
+        let workoutsToDelete = offsets.map { workouts[$0] }
+
+        Task {
+            for workout in workoutsToDelete {
+                try await deleteWorkoutUseCase.call(workout)
+            }
+
+            DispatchQueue.main.async {
+                self.workouts.remove(atOffsets: offsets)
+            }
+        }
     }
 }

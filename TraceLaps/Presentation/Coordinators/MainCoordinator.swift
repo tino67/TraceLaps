@@ -24,8 +24,14 @@ class MainCoordinator: Coordinator {
     private func buildWorkoutsView() -> some View {
         let getWorkoutsUseCase = GetWorkouts(workoutRepository: WorkoutRepositoryImpl(localDataSource: WorkoutLocalDataSourceImpl()))
         let saveWorkoutUseCase = SaveWorkout(workoutRepository: WorkoutRepositoryImpl(localDataSource: WorkoutLocalDataSourceImpl()))
+        let deleteWorkoutUseCase = DeleteWorkoutUseCase(workoutRepository: WorkoutRepositoryImpl(localDataSource: WorkoutLocalDataSourceImpl()))
 
-        let viewModel = WorkoutsViewModel(getWorkoutsUseCase: getWorkoutsUseCase, saveWorkoutUseCase: saveWorkoutUseCase, healthKitManager: HealthKitManager())
+        let viewModel = WorkoutsViewModel(
+            getWorkoutsUseCase: getWorkoutsUseCase,
+            saveWorkoutUseCase: saveWorkoutUseCase,
+            deleteWorkoutUseCase: deleteWorkoutUseCase,
+            healthKitManager: HealthKitManager()
+        )
 
         WorkoutsView(viewModel: viewModel, coordinator: self)
     }
