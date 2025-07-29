@@ -8,6 +8,7 @@
 import Foundation
 import SwiftUI
 
+@MainActor
 protocol Coordinator {
     func start() -> AnyView
 }

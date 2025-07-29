@@ -12,17 +12,19 @@ import HealthKit
 @MainActor
 class WorkoutsViewModel: ObservableObject {
     private let getWorkoutsUseCase: GetWorkoutsUseCase
-    private let saveWorkoutUseCase: SaveWorkoutUseCase
-    private let healthKitManager = HealthKitManager()
+    private let saveWorkoutUseCase: SaveWorkout
+    private let healthKitManager: HealthKitManager
 
     @Published var workouts: [Workout] = []
     @Published var healthKitWorkouts: [HKWorkout] = []
     @Published var savedWorkoutIDs = Set<UUID>()
     @Published var isHealthKitAuthorized = false
+    @Published var path = [MainCoordinator.Destination]()
 
-    init(getWorkoutsUseCase: GetWorkoutsUseCase, saveWorkoutUseCase: SaveWorkoutUseCase) {
+    init(getWorkoutsUseCase: GetWorkoutsUseCase, saveWorkoutUseCase: SaveWorkout, healthKitManager: HealthKitManager) {
         self.getWorkoutsUseCase = getWorkoutsUseCase
         self.saveWorkoutUseCase = saveWorkoutUseCase
+        self.healthKitManager = healthKitManager
         requestHealthKitAuthorization()
     }
 
@@ -33,16 +35,6 @@ class WorkoutsViewModel: ObservableObject {
                 self.workouts = savedWorkouts
                 self.savedWorkoutIDs = Set(savedWorkouts.map { $0.id })
             }
-        } catch {
-            // Handle error
-        }
-    }
-
-    func addWorkout() async {
-        let newWorkout = Workout(id: UUID(), date: Date(), duration: .random(in: 1000...5000), distance: .random(in: 1...10), calories: .random(in: 100...500))
-        do {
-            try await saveWorkoutUseCase.call(newWorkout)
-            await getWorkouts()
         } catch {
             // Handle error
         }
@@ -75,12 +67,26 @@ class WorkoutsViewModel: ObservableObject {
         Task {
             let existingWorkouts = try await getWorkoutsUseCase.call()
             if !existingWorkouts.contains(where: { $0.importId == hkWorkout.uuid }) {
-                let workout = Workout(id: UUID(), importId: hkWorkout.uuid, date: hkWorkout.endDate, duration: hkWorkout.duration, distance: hkWorkout.totalDistance?.doubleValue(for: .meter()) ?? 0, calories: hkWorkout.totalEnergyBurned?.doubleValue(for: .kilocalorie()) ?? 0)
+                let locations = try await healthKitManager.fetchRoute(for: hkWorkout)
+
+                let workout = Workout(
+                    id: UUID(),
+                    importId: hkWorkout.uuid,
+                    date: hkWorkout.endDate,
+                    duration: hkWorkout.duration,
+                    distance: hkWorkout.totalDistance?.doubleValue(for: .meter()) ?? 0,
+                    calories: hkWorkout.totalEnergyBurned?.doubleValue(for: .kilocalorie()) ?? 0,
+                    locations: locations.map { .init(from: $0) }
+                )
                 try await saveWorkoutUseCase.call(workout)
                 DispatchQueue.main.async {
                     self.workouts.append(workout)
                 }
             }
         }
+    }
+    
+    func workoutTapped(workout: Workout) {
+        path.append(.detail(workout))
     }
 }

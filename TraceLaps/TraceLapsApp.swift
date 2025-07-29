@@ -10,9 +10,10 @@ import SwiftData
 
 @main
 struct TraceLapsApp: App {
-    var sharedModelContainer: ModelContainer = {
+    static var sharedModelContainer: ModelContainer = {
         let schema = Schema([
-            Item.self,
+            Workout.self,
+            LocationPoint.self,
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 
@@ -23,10 +24,12 @@ struct TraceLapsApp: App {
         }
     }()
 
+    private let coordinator = MainCoordinator()
+
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            coordinator.start()
         }
-        .modelContainer(sharedModelContainer)
+        .modelContainer(TraceLapsApp.sharedModelContainer)
     }
 }

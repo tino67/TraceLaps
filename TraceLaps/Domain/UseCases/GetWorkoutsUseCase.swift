@@ -1,5 +1,5 @@
 //
-//  GetWorkouts.swift
+//  GetWorkoutsUseCase.swift
 //  TraceLaps
 //
 //  Created by Jules on 29/07/2025.

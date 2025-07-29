@@ -7,6 +7,7 @@
 
 import Foundation
 import HealthKit
+import CoreLocation
 
 class HealthKitManager {
     let healthStore = HKHealthStore()
@@ -44,7 +45,7 @@ class HealthKitManager {
                 group.enter()
                 let routeQuery = HKQuery.predicateForObjects(from: workout)
                 let routeQuerySample = HKSampleQuery(sampleType: HKSeriesType.workoutRoute(), predicate: routeQuery, limit: 1, sortDescriptors: nil) { _, samples, error in
-                    if let route = samples?.first as? HKWorkoutRoute, error == nil {
+                    if let _ = samples?.first as? HKWorkoutRoute, error == nil {
                         workoutsWithRoutes.append(workout)
                     }
                     group.leave()
@@ -57,6 +58,42 @@ class HealthKitManager {
             }
         }
         healthStore.execute(query)
+    }
+
+    func fetchRoute(for workout: HKWorkout) async throws -> [CLLocation] {
+        let route = try await loadRoute(for: workout)
+        guard let route else { return [] }
+
+        return try await withCheckedThrowingContinuation { continuation in
+            var allLocations: [CLLocation] = []
+            let query = HKWorkoutRouteQuery(route: route) { _, locs, done, error in
+                if let locs = locs { allLocations.append(contentsOf: locs) }
+                if done {
+                    continuation.resume(returning: allLocations)
+                } else if let error = error {
+                    continuation.resume(throwing: error)
+                }
+            }
+            healthStore.execute(query)
+        }
+    }
+}
+
+private extension HealthKitManager {
+    func loadRoute(for workout: HKWorkout) async throws -> HKWorkoutRoute? {
+        let predicate = HKQuery.predicateForObjects(from: workout)
+
+        return try await withCheckedThrowingContinuation { continuation in
+            let query = HKSampleQuery(
+                sampleType: HKSeriesType.workoutRoute(),
+                predicate: predicate,
+                limit: 1,
+                sortDescriptors: nil
+            ) { _, samples, _ in
+                continuation.resume(returning: samples?.first as? HKWorkoutRoute)
+            }
+            healthStore.execute(query)
+        }
     }
 }
 

@@ -7,8 +7,12 @@
 
 import Foundation
 
-struct WorkoutRepositoryImpl: WorkoutRepository {
+class WorkoutRepositoryImpl: WorkoutRepository {
     let localDataSource: WorkoutLocalDataSource
+
+    init(localDataSource: WorkoutLocalDataSource) {
+        self.localDataSource = localDataSource
+    }
 
     func getWorkouts() async throws -> [Workout] {
         try await localDataSource.getWorkouts()

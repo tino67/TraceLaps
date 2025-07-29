@@ -8,24 +8,12 @@
 import Foundation
 import SwiftData
 
+@MainActor
 struct WorkoutLocalDataSourceImpl: WorkoutLocalDataSource {
-    private let modelContainer: ModelContainer
-    private let modelContext: ModelContext
-
-    init() {
-        do {
-            self.modelContainer = try ModelContainer(for: Workout.self)
-            self.modelContext = ModelContext(modelContainer)
-            #if DEBUG
-            try modelContext.delete(model: Workout.self)
-            #endif
-        } catch {
-            fatalError(error.localizedDescription)
-        }
-    }
+    private let modelContext = TraceLapsApp.sharedModelContainer.mainContext
 
     func getWorkouts() async throws -> [Workout] {
-        let descriptor = FetchDescriptor<Workout>()
+        let descriptor = FetchDescriptor<Workout>(sortBy: [SortDescriptor(\.date, order: .reverse)])
         return try modelContext.fetch(descriptor)
     }
 
