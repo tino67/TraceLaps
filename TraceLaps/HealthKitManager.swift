@@ -43,7 +43,7 @@ class HealthKitManager {
             for workout in workouts {
                 group.enter()
                 let routeQuery = HKQuery.predicateForObjects(from: workout)
-                let routeQuerySample = HKSampleQuery(sampleType: .workoutRoute(), predicate: routeQuery, limit: 1, sortDescriptors: nil) { _, samples, error in
+                let routeQuerySample = HKSampleQuery(sampleType: HKSeriesType.workoutRoute(), predicate: routeQuery, limit: 1, sortDescriptors: nil) { _, samples, error in
                     if let route = samples?.first as? HKWorkoutRoute, error == nil {
                         workoutsWithRoutes.append(workout)
                     }
