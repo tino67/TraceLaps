@@ -73,8 +73,8 @@ class WorkoutsViewModel: ObservableObject {
     func save(hkWorkout: HKWorkout) {
         Task {
             let existingWorkouts = try await getWorkoutsUseCase.call()
-            if !existingWorkouts.contains(where: { $0.id == hkWorkout.uuid }) {
-                let workout = Workout(id: hkWorkout.uuid, date: hkWorkout.endDate, duration: hkWorkout.duration, distance: hkWorkout.totalDistance?.doubleValue(for: .meter()) ?? 0, calories: hkWorkout.totalEnergyBurned?.doubleValue(for: .kilocalorie()) ?? 0)
+            if !existingWorkouts.contains(where: { $0.importId == hkWorkout.uuid }) {
+                let workout = Workout(id: UUID(), importId: hkWorkout.uuid, date: hkWorkout.endDate, duration: hkWorkout.duration, distance: hkWorkout.totalDistance?.doubleValue(for: .meter()) ?? 0, calories: hkWorkout.totalEnergyBurned?.doubleValue(for: .kilocalorie()) ?? 0)
                 try await saveWorkoutUseCase.call(workout)
                 DispatchQueue.main.async {
                     self.workouts.append(workout)
