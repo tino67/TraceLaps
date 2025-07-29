@@ -22,12 +22,12 @@ class MainCoordinator: Coordinator {
 
     @ViewBuilder
     private func buildWorkoutsView() -> some View {
-        let getWorkoutsUseCase = GetWorkouts(workoutRepository: WorkoutRepositoryImpl(dataSource: WorkoutLocalDataSourceImpl(modelContext: TraceLapsApp.sharedModelContainer.mainContext)))
-        let saveWorkoutUseCase = SaveWorkout(workoutRepository: WorkoutRepositoryImpl(dataSource: WorkoutLocalDataSourceImpl(modelContext: TraceLapsApp.sharedModelContainer.mainContext)))
+        let getWorkoutsUseCase = GetWorkoutsUseCaseImpl(workoutRepository: WorkoutRepositoryImpl(localDataSource: WorkoutLocalDataSourceImpl()))
+        let saveWorkoutUseCase = SaveWorkout(workoutRepository: WorkoutRepositoryImpl(localDataSource: WorkoutLocalDataSourceImpl()))
 
         let viewModel = WorkoutsViewModel(getWorkoutsUseCase: getWorkoutsUseCase, saveWorkoutUseCase: saveWorkoutUseCase, healthKitManager: HealthKitManager())
 
-        WorkoutsView(viewModel: viewModel,-coordinator: self)
+        WorkoutsView(viewModel: viewModel, coordinator: self)
     }
 
     @ViewBuilder

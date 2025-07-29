@@ -11,7 +11,7 @@ import HealthKit
 
 @MainActor
 class WorkoutsViewModel: ObservableObject {
-    private let getWorkoutsUseCase: GetWorkouts
+    private let getWorkoutsUseCase: GetWorkoutsUseCase
     private let saveWorkoutUseCase: SaveWorkout
     private let healthKitManager: HealthKitManager
 
@@ -20,7 +20,7 @@ class WorkoutsViewModel: ObservableObject {
     @Published var isHealthKitAuthorized = false
     @Published var path = [MainCoordinator.Destination]()
 
-    init(getWorkoutsUseCase: GetWorkouts, saveWorkoutUseCase: SaveWorkout, healthKitManager: HealthKitManager) {
+    init(getWorkoutsUseCase: GetWorkoutsUseCase, saveWorkoutUseCase: SaveWorkout, healthKitManager: HealthKitManager) {
         self.getWorkoutsUseCase = getWorkoutsUseCase
         self.saveWorkoutUseCase = saveWorkoutUseCase
         self.healthKitManager = healthKitManager
@@ -29,7 +29,7 @@ class WorkoutsViewModel: ObservableObject {
 
     func getWorkouts() async {
         do {
-            workouts = try await getWorkoutsUseCase.execute()
+            workouts = try await getWorkoutsUseCase.call()
         } catch {
             // Handle error
         }
