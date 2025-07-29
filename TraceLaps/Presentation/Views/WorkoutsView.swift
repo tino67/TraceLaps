@@ -14,12 +14,7 @@ struct WorkoutsView: View {
 
     var body: some View {
         List(viewModel.workouts) { workout in
-            VStack(alignment: .leading) {
-                Text("Duration: \(workout.duration)")
-                    .font(.headline)
-                Text("Distance: \(workout.distance)")
-                    .font(.subheadline)
-            }
+            WorkoutCellView(workout: workout)
         }
         .onAppear {
             Task {
