@@ -40,7 +40,9 @@ class MainCoordinator: Coordinator {
     func view(for destination: Destination) -> some View {
         switch destination {
         case .detail(let workout):
-            WorkoutDetailView(workout: workout)
+            let deleteWorkoutUseCase = DeleteWorkoutUseCase(workoutRepository: WorkoutRepositoryImpl(localDataSource: WorkoutLocalDataSourceImpl()))
+            let viewModel = WorkoutDetailViewModel(workout: workout, deleteWorkoutUseCase: deleteWorkoutUseCase)
+            WorkoutDetailView(viewModel: viewModel)
         }
     }
 }

@@ -11,6 +11,8 @@ struct WorkoutsView: View {
     @StateObject var viewModel: WorkoutsViewModel
     @State private var showHealthKitAlert = false
     @State private var showImportWorkouts = false
+    @State private var showDeleteConfirmation = false
+    @State private var offsetsToDelete: IndexSet?
     let coordinator: MainCoordinator
 
     var body: some View {
@@ -23,7 +25,10 @@ struct WorkoutsView: View {
                         WorkoutCellView(workout: workout)
                     }
                 }
-                .onDelete(perform: viewModel.delete)
+                .onDelete(perform: { offsets in
+                    offsetsToDelete = offsets
+                    showDeleteConfirmation = true
+                })
             }
             .onAppear {
                 Task {
@@ -58,6 +63,16 @@ struct WorkoutsView: View {
             }
             .navigationDestination(for: MainCoordinator.Destination.self) { destination in
                 coordinator.view(for: destination)
+            }
+            .alert("Delete Workout", isPresented: $showDeleteConfirmation) {
+                Button("Cancel", role: .cancel) { }
+                Button("Delete", role: .destructive) {
+                    if let offsets = offsetsToDelete {
+                        viewModel.delete(at: offsets)
+                    }
+                }
+            } message: {
+                Text("Are you sure you want to delete this workout?")
             }
         }
     }
