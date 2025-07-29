@@ -8,6 +8,7 @@
 import Foundation
 import SwiftData
 
+@MainActor
 struct WorkoutLocalDataSourceImpl: WorkoutLocalDataSource {
     private let modelContext = TraceLapsApp.sharedModelContainer.mainContext
 

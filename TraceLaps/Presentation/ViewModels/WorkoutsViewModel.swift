@@ -60,7 +60,7 @@ class WorkoutsViewModel: ObservableObject {
 
     func save(hkWorkout: HKWorkout) {
         Task {
-            let existingWorkouts = try await getWorkoutsUseCase.execute()
+            let existingWorkouts = try await getWorkoutsUseCase.call()
             if !existingWorkouts.contains(where: { $0.id == hkWorkout.uuid }) {
                 let workout = Workout(
                     id: hkWorkout.uuid,
@@ -70,7 +70,7 @@ class WorkoutsViewModel: ObservableObject {
                     calories: hkWorkout.totalEnergyBurned?.doubleValue(for: .kilocalorie()) ?? 0,
                     locations: []
                 )
-                try await saveWorkoutUseCase.execute(workout)
+                try await saveWorkoutUseCase.call(workout)
                 await getWorkouts()
             }
         }
