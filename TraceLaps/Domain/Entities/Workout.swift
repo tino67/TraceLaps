@@ -9,7 +9,7 @@ import Foundation
 import SwiftData
 
 @Model
-final class Workout {
+final class Workout: Sendable {
     var id: UUID
     var date: Date
     var duration: TimeInterval
