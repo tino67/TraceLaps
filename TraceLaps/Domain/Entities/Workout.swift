@@ -10,15 +10,17 @@ import SwiftData
 
 @Model
 final class Workout: Sendable {
-    var id: UUID
+    @Attribute(.unique) var id: UUID
+    var importId: UUID?
     var date: Date
     var duration: TimeInterval
     var distance: Double
     var calories: Double
     var locations: [WorkoutLocation]
 
-    init(id: UUID, date: Date, duration: TimeInterval, distance: Double, calories: Double, locations: [WorkoutLocation]) {
+    init(id: UUID, importId: UUID? = nil, date: Date, duration: TimeInterval, distance: Double, calories: Double, locations: [WorkoutLocation]) {
         self.id = id
+        self.importId = importId
         self.date = date
         self.duration = duration
         self.distance = distance

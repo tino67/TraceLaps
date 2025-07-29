@@ -17,6 +17,7 @@ class WorkoutsViewModel: ObservableObject {
 
     @Published var workouts: [Workout] = []
     @Published var healthKitWorkouts: [HKWorkout] = []
+    @Published var savedWorkoutIDs = Set<UUID>()
     @Published var isHealthKitAuthorized = false
     @Published var path = [MainCoordinator.Destination]()
 
@@ -29,7 +30,11 @@ class WorkoutsViewModel: ObservableObject {
 
     func getWorkouts() async {
         do {
-            workouts = try await getWorkoutsUseCase.call()
+            let savedWorkouts = try await getWorkoutsUseCase.call()
+            DispatchQueue.main.async {
+                self.workouts = savedWorkouts
+                self.savedWorkoutIDs = Set(savedWorkouts.map { $0.id })
+            }
         } catch {
             // Handle error
         }
@@ -61,9 +66,10 @@ class WorkoutsViewModel: ObservableObject {
     func save(hkWorkout: HKWorkout) {
         Task {
             let existingWorkouts = try await getWorkoutsUseCase.call()
-            if !existingWorkouts.contains(where: { $0.id == hkWorkout.uuid }) {
+            if !existingWorkouts.contains(where: { $0.importId == hkWorkout.uuid }) {
                 let workout = Workout(
-                    id: hkWorkout.uuid,
+                    id: UUID(),
+                    importId: hkWorkout.uuid,
                     date: hkWorkout.endDate,
                     duration: hkWorkout.duration,
                     distance: hkWorkout.totalDistance?.doubleValue(for: .meter()) ?? 0,
@@ -71,11 +77,13 @@ class WorkoutsViewModel: ObservableObject {
                     locations: []
                 )
                 try await saveWorkoutUseCase.call(workout)
-                await getWorkouts()
+                DispatchQueue.main.async {
+                    self.workouts.append(workout)
+                }
             }
         }
     }
-
+    
     func workoutTapped(workout: Workout) {
         path.append(.detail(workout))
     }

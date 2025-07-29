@@ -19,12 +19,7 @@ struct WorkoutsView: View {
                 Button(action: {
                     viewModel.workoutTapped(workout: workout)
                 }) {
-                    VStack(alignment: .leading) {
-                        Text("Duration: \(workout.duration)")
-                            .font(.headline)
-                        Text("Distance: \(workout.distance)")
-                            .font(.subheadline)
-                    }
+                    WorkoutCellView(workout: workout)
                 }
             }
             .onAppear {
