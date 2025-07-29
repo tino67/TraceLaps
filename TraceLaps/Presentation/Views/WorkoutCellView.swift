@@ -22,17 +22,16 @@ struct WorkoutCellView: View {
                     .font(.subheadline)
             }
             Spacer()
-            Text(distance(for: workout))
-                .font(.headline)
+            VStack(alignment: .trailing) {
+                Text(distance(for: workout))
+                    .font(.headline)
+                Text(Formatters.shared.format(duration: workout.duration) ?? "N/A")
+                    .font(.subheadline)
+            }
         }
     }
 
     private func distance(for workout: Workout) -> String {
-        let distance = workout.distance
-        let measurement = Measurement(value: distance, unit: UnitLength.meters)
-        let formatter = MeasurementFormatter()
-        formatter.unitOptions = .naturalScale
-        formatter.numberFormatter.maximumFractionDigits = 2
-        return formatter.string(from: measurement)
+        return Formatters.shared.format(distance: workout.distance)
     }
 }
