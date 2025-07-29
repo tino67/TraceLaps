@@ -15,6 +15,7 @@ class WorkoutsViewModel: ObservableObject {
     private let healthKitManager = HealthKitManager()
 
     @Published var workouts: [Workout] = []
+    @Published var healthKitWorkouts: [HKWorkout] = []
     @Published var isHealthKitAuthorized = false
 
     init(getWorkoutsUseCase: GetWorkoutsUseCase, saveWorkoutUseCase: SaveWorkoutUseCase) {
@@ -57,12 +58,20 @@ class WorkoutsViewModel: ObservableObject {
     private func fetchWorkouts() {
         healthKitManager.fetchWorkouts { [weak self] workouts, error in
             if let workouts = workouts {
-                let mappedWorkouts = workouts.map { workout in
-                    Workout(id: workout.uuid, date: workout.endDate, duration: workout.duration, distance: workout.totalDistance?.doubleValue(for: .meter()) ?? 0, calories: workout.totalEnergyBurned?.doubleValue(for: .kilocalorie()) ?? 0)
-                }
                 DispatchQueue.main.async {
-                    self?.workouts = mappedWorkouts
+                    self?.healthKitWorkouts = workouts
                 }
+            }
+        }
+    }
+
+    func save(hkWorkout: HKWorkout) {
+        Task {
+            let existingWorkouts = try await getWorkoutsUseCase.call()
+            if !existingWorkouts.contains(where: { $0.id == hkWorkout.uuid }) {
+                let workout = Workout(id: hkWorkout.uuid, date: hkWorkout.endDate, duration: hkWorkout.duration, distance: hkWorkout.totalDistance?.doubleValue(for: .meter()) ?? 0, calories: hkWorkout.totalEnergyBurned?.doubleValue(for: .kilocalorie()) ?? 0)
+                try await saveWorkoutUseCase.call(workout)
+                await getWorkouts()
             }
         }
     }

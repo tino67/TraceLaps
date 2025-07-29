@@ -10,6 +10,7 @@ import SwiftUI
 struct WorkoutsView: View {
     @StateObject var viewModel: WorkoutsViewModel
     @State private var showHealthKitAlert = false
+    @State private var showImportWorkouts = false
 
     var body: some View {
         List(viewModel.workouts) { workout in
@@ -28,12 +29,13 @@ struct WorkoutsView: View {
         .navigationTitle("Workouts")
         .toolbar {
             Button(action: {
-                Task {
-                    await viewModel.addWorkout()
-                }
+                showImportWorkouts = true
             }) {
                 Image(systemName: "plus")
             }
+        }
+        .sheet(isPresented: $showImportWorkouts) {
+            ImportWorkoutsView(viewModel: viewModel)
         }
         .onChange(of: viewModel.isHealthKitAuthorized) { oldValue, newValue in
             if !newValue {
