@@ -7,36 +7,29 @@
 
 import Foundation
 import SwiftUI
+import HealthKit
 
 @MainActor
 class WorkoutsViewModel: ObservableObject {
-    private let getWorkoutsUseCase: GetWorkoutsUseCase
-    private let saveWorkoutUseCase: SaveWorkoutUseCase
-    private let healthKitManager = HealthKitManager()
+    private let getWorkoutsUseCase: GetWorkouts
+    private let saveWorkoutUseCase: SaveWorkout
+    private let healthKitManager: HealthKitManager
 
     @Published var workouts: [Workout] = []
     @Published var healthKitWorkouts: [HKWorkout] = []
     @Published var isHealthKitAuthorized = false
+    @Published var path = [MainCoordinator.Destination]()
 
-    init(getWorkoutsUseCase: GetWorkoutsUseCase, saveWorkoutUseCase: SaveWorkoutUseCase) {
+    init(getWorkoutsUseCase: GetWorkouts, saveWorkoutUseCase: SaveWorkout, healthKitManager: HealthKitManager) {
         self.getWorkoutsUseCase = getWorkoutsUseCase
         self.saveWorkoutUseCase = saveWorkoutUseCase
+        self.healthKitManager = healthKitManager
         requestHealthKitAuthorization()
     }
 
     func getWorkouts() async {
         do {
-            workouts = try await getWorkoutsUseCase.call()
-        } catch {
-            // Handle error
-        }
-    }
-
-    func addWorkout() async {
-        let newWorkout = Workout(id: UUID(), date: Date(), duration: .random(in: 1000...5000), distance: .random(in: 1...10), calories: .random(in: 100...500))
-        do {
-            try await saveWorkoutUseCase.call(newWorkout)
-            await getWorkouts()
+            workouts = try await getWorkoutsUseCase.execute()
         } catch {
             // Handle error
         }
@@ -67,12 +60,23 @@ class WorkoutsViewModel: ObservableObject {
 
     func save(hkWorkout: HKWorkout) {
         Task {
-            let existingWorkouts = try await getWorkoutsUseCase.call()
+            let existingWorkouts = try await getWorkoutsUseCase.execute()
             if !existingWorkouts.contains(where: { $0.id == hkWorkout.uuid }) {
-                let workout = Workout(id: hkWorkout.uuid, date: hkWorkout.endDate, duration: hkWorkout.duration, distance: hkWorkout.totalDistance?.doubleValue(for: .meter()) ?? 0, calories: hkWorkout.totalEnergyBurned?.doubleValue(for: .kilocalorie()) ?? 0)
-                try await saveWorkoutUseCase.call(workout)
+                let workout = Workout(
+                    id: hkWorkout.uuid,
+                    date: hkWorkout.endDate,
+                    duration: hkWorkout.duration,
+                    distance: hkWorkout.totalDistance?.doubleValue(for: .meter()) ?? 0,
+                    calories: hkWorkout.totalEnergyBurned?.doubleValue(for: .kilocalorie()) ?? 0,
+                    locations: []
+                )
+                try await saveWorkoutUseCase.execute(workout)
                 await getWorkouts()
             }
         }
+    }
+
+    func workoutTapped(workout: Workout) {
+        path.append(.detail(workout))
     }
 }

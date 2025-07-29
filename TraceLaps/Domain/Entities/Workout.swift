@@ -15,12 +15,14 @@ final class Workout: Sendable {
     var duration: TimeInterval
     var distance: Double
     var calories: Double
+    var locations: [WorkoutLocation]
 
-    init(id: UUID, date: Date, duration: TimeInterval, distance: Double, calories: Double) {
+    init(id: UUID, date: Date, duration: TimeInterval, distance: Double, calories: Double, locations: [WorkoutLocation]) {
         self.id = id
         self.date = date
         self.duration = duration
         self.distance = distance
         self.calories = calories
+        self.locations = locations
     }
 }
