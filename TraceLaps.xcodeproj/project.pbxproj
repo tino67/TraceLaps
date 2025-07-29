@@ -175,6 +175,11 @@
 				TargetAttributes = {
 					75B527D32E38D300002CBDD5 = {
 						CreatedOnToolsVersion = 16.4;
+						SystemCapabilities = {
+							com.apple.HealthKit = {
+								enabled = 1;
+							};
+						};
 					};
 					75B527E22E38D301002CBDD5 = {
 						CreatedOnToolsVersion = 16.4;
