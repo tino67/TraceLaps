@@ -18,13 +18,17 @@ struct ImportWorkoutsView: View {
     var body: some View {
         NavigationView {
             List(viewModel.healthKitWorkouts) { workout in
-                HKWorkoutCellView(workout: workout, isSelected: selectedWorkouts.contains(workout)) {
-                    if selectedWorkouts.contains(workout) {
-                        selectedWorkouts.remove(workout)
-                    } else {
-                        selectedWorkouts.insert(workout)
+                let isSaved = viewModel.savedWorkoutIDs.contains(workout.id)
+                HKWorkoutCellView(workout: workout, isSelected: selectedWorkouts.contains(workout), isSaved: isSaved) {
+                    if !isSaved {
+                        if selectedWorkouts.contains(workout) {
+                            selectedWorkouts.remove(workout)
+                        } else {
+                            selectedWorkouts.insert(workout)
+                        }
                     }
                 }
+                .disabled(isSaved)
             }
             .navigationTitle("Import Workouts")
             .toolbar {

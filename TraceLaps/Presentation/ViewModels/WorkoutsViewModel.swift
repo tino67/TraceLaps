@@ -7,7 +7,6 @@
 
 import Foundation
 import SwiftUI
-import HealthKit
 
 @MainActor
 class WorkoutsViewModel: ObservableObject {
@@ -17,6 +16,7 @@ class WorkoutsViewModel: ObservableObject {
 
     @Published var workouts: [Workout] = []
     @Published var healthKitWorkouts: [HKWorkout] = []
+    @Published var savedWorkoutIDs = Set<UUID>()
     @Published var isHealthKitAuthorized = false
 
     init(getWorkoutsUseCase: GetWorkoutsUseCase, saveWorkoutUseCase: SaveWorkoutUseCase) {
@@ -27,7 +27,11 @@ class WorkoutsViewModel: ObservableObject {
 
     func getWorkouts() async {
         do {
-            workouts = try await getWorkoutsUseCase.call()
+            let savedWorkouts = try await getWorkoutsUseCase.call()
+            DispatchQueue.main.async {
+                self.workouts = savedWorkouts
+                self.savedWorkoutIDs = Set(savedWorkouts.map { $0.id })
+            }
         } catch {
             // Handle error
         }

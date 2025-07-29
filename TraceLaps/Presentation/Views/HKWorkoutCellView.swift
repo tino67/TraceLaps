@@ -11,25 +11,29 @@ import HealthKit
 struct HKWorkoutCellView: View {
     let workout: HKWorkout
     let isSelected: Bool
+    let isSaved: Bool
     let action: () -> Void
 
     var body: some View {
         HStack {
             Image(systemName: workout.workoutActivityType.symbol)
                 .font(.title)
-                .foregroundColor(.accentColor)
+                .foregroundColor(isSaved ? .gray : .accentColor)
             VStack(alignment: .leading) {
                 Text(workout.workoutActivityType.name)
                     .font(.headline)
                 Text(workout.endDate, style: .date)
                     .font(.subheadline)
             }
+            .foregroundColor(isSaved ? .gray : .primary)
             Spacer()
             Text(distance(for: workout))
                 .font(.headline)
+                .foregroundColor(isSaved ? .gray : .primary)
             Button(action: action) {
-                Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+                Image(systemName: isSelected ? "checkmark.circle.fill" : isSaved ? "checkmark.circle.fill" : "circle")
                     .font(.title)
+                    .foregroundColor(isSaved ? .gray : .accentColor)
             }
             .buttonStyle(BorderlessButtonStyle())
         }
