@@ -29,10 +29,9 @@ class HealthKitManager {
     }
 
     func fetchWorkouts(completion: @escaping ([HKWorkout]?, Error?) -> Void) {
-        let workoutPredicate = HKQuery.predicateForWorkouts(with: .running)
         let sortDescriptor = NSSortDescriptor(key: HKSampleSortIdentifierEndDate, ascending: false)
 
-        let query = HKSampleQuery(sampleType: .workoutType(), predicate: workoutPredicate, limit: HKObjectQueryNoLimit, sortDescriptors: [sortDescriptor]) { _, samples, error in
+        let query = HKSampleQuery(sampleType: .workoutType(), predicate: nil, limit: HKObjectQueryNoLimit, sortDescriptors: [sortDescriptor]) { _, samples, error in
             guard let workouts = samples as? [HKWorkout] else {
                 completion(nil, error)
                 return

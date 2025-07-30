@@ -21,4 +21,8 @@ class WorkoutRepositoryImpl: WorkoutRepository {
     func saveWorkout(_ workout: Workout) async throws {
         try await localDataSource.saveWorkout(workout)
     }
+
+    func delete(workout: Workout) async throws {
+        try await localDataSource.delete(workout: workout)
+    }
 }

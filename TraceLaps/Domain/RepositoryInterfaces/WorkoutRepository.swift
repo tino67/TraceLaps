@@ -10,4 +10,5 @@ import Foundation
 protocol WorkoutRepository {
     func getWorkouts() async throws -> [Workout]
     func saveWorkout(_ workout: Workout) async throws
+    func delete(workout: Workout) async throws
 }

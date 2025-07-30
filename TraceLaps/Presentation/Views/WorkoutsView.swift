@@ -11,16 +11,22 @@ struct WorkoutsView: View {
     @StateObject var viewModel: WorkoutsViewModel
     @State private var showHealthKitAlert = false
     @State private var showImportWorkouts = false
+    @AppStorage("lastDeleted") private var lastDeleted: TimeInterval = 0.0
     let coordinator: MainCoordinator
 
     var body: some View {
         NavigationStack(path: $viewModel.path) {
-            List(viewModel.workouts) { workout in
-                Button(action: {
-                    viewModel.workoutTapped(workout: workout)
-                }) {
-                    WorkoutCellView(workout: workout)
+            List {
+                ForEach(viewModel.workouts) { workout in
+                    Button(action: {
+                        viewModel.workoutTapped(workout: workout)
+                    }) {
+                        WorkoutCellView(workout: workout)
+                    }
                 }
+                .onDelete(perform: { offsets in
+                    viewModel.delete(at: offsets)
+                })
             }
             .onAppear {
                 Task {

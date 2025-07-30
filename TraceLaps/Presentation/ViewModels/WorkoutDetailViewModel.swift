@@ -10,8 +10,14 @@ import SwiftUI
 
 class WorkoutDetailViewModel: ObservableObject {
     @Published var workout: Workout
+    private let deleteWorkoutUseCase: DeleteWorkout
 
-    init(workout: Workout) {
+    init(workout: Workout, deleteWorkoutUseCase: DeleteWorkout) {
         self.workout = workout
+        self.deleteWorkoutUseCase = deleteWorkoutUseCase
+    }
+
+    func deleteWorkout() async {
+        try? await deleteWorkoutUseCase.call(workout)
     }
 }
