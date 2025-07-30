@@ -15,11 +15,27 @@ struct WorkoutsView: View {
 
     var body: some View {
         NavigationStack(path: $viewModel.path) {
-            List(viewModel.workouts) { workout in
-                Button(action: {
-                    viewModel.workoutTapped(workout: workout)
-                }) {
-                    WorkoutCellView(workout: workout)
+            Group {
+                if viewModel.workouts.isEmpty {
+                    ContentUnavailableView(label: {
+                        Label("No workouts", systemImage: "figure.run.circle")
+                    }, description: {
+                        Text("Import workouts from HealthKit to get started.")
+                    }, actions: {
+                        Button(action: {
+                            showImportWorkouts = true
+                        }) {
+                            Text("Import")
+                        }
+                    })
+                } else {
+                    List(viewModel.workouts) { workout in
+                        Button(action: {
+                            viewModel.workoutTapped(workout: workout)
+                        }) {
+                            WorkoutCellView(workout: workout)
+                        }
+                    }
                 }
             }
             .onAppear {
