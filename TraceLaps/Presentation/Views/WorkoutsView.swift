@@ -11,8 +11,6 @@ struct WorkoutsView: View {
     @StateObject var viewModel: WorkoutsViewModel
     @State private var showHealthKitAlert = false
     @State private var showImportWorkouts = false
-    @State private var showDeleteConfirmation = false
-    @State private var workoutToDelete: Workout?
     @AppStorage("lastDeleted") private var lastDeleted: TimeInterval = 0.0
     let coordinator: MainCoordinator
 
@@ -20,21 +18,15 @@ struct WorkoutsView: View {
         NavigationStack(path: $viewModel.path) {
             List {
                 ForEach(viewModel.workouts) { workout in
-                    DeletableRow {
-                        Button(action: {
-                            viewModel.workoutTapped(workout: workout)
-                        }) {
-                            WorkoutCellView(workout: workout)
-                        }
-                    } onDelete: {
-                        if Date().timeIntervalSince(Date(timeIntervalSince1970: lastDeleted)) < 120 {
-                            viewModel.delete(workout: workout)
-                        } else {
-                            workoutToDelete = workout
-                            showDeleteConfirmation = true
-                        }
+                    Button(action: {
+                        viewModel.workoutTapped(workout: workout)
+                    }) {
+                        WorkoutCellView(workout: workout)
                     }
                 }
+                .onDelete(perform: { offsets in
+                    viewModel.delete(at: offsets)
+                })
             }
             .onAppear {
                 Task {
@@ -69,17 +61,6 @@ struct WorkoutsView: View {
             }
             .navigationDestination(for: MainCoordinator.Destination.self) { destination in
                 coordinator.view(for: destination)
-            }
-            .alert("Delete Workout", isPresented: $showDeleteConfirmation) {
-                Button("Cancel", role: .cancel) { }
-                Button("Delete", role: .destructive) {
-                    if let workout = workoutToDelete {
-                        viewModel.delete(workout: workout)
-                        lastDeleted = Date().timeIntervalSince1970
-                    }
-                }
-            } message: {
-                Text("Are you sure you want to delete this workout?")
             }
         }
     }

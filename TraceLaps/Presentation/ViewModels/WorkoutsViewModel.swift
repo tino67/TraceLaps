@@ -98,12 +98,14 @@ class WorkoutsViewModel: ObservableObject {
         path.append(.detail(workout))
     }
 
-    func delete(workout: Workout) {
+    func delete(at offsets: IndexSet) {
+        let workoutsToDelete = offsets.map { workouts[$0] }
         Task {
-            try await deleteWorkoutUseCase.call(workout)
-
+            for workout in workoutsToDelete {
+                try await deleteWorkoutUseCase.call(workout)
+            }
             DispatchQueue.main.async {
-                self.workouts.removeAll { $0.id == workout.id }
+                self.workouts.remove(atOffsets: offsets)
             }
         }
     }
