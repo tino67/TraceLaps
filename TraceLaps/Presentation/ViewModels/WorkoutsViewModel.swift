@@ -8,105 +8,62 @@
 import Foundation
 import SwiftUI
 import HealthKit
+import Entities
+import UseCases
 
 @MainActor
-class WorkoutsViewModel: ObservableObject {
-    private let getWorkoutsUseCase: GetWorkoutsUseCase
-    private let saveWorkoutUseCase: SaveWorkout
-    private let deleteWorkoutUseCase: DeleteWorkout
-    private let healthKitManager: HealthKitManager
+final class WorkoutsViewModel: ObservableObject {
+    // MARK: UseCases
+    private let getWorkoutsUseCase: UseCase.GetWorkouts
+    private let deleteWorkoutUseCase: UseCase.DeleteWorkout
 
-    @Published var workouts: [Workout] = []
-    @Published var healthKitWorkouts: [HKWorkout] = []
-    @Published var savedWorkoutIDs = Set<UUID>()
-    @Published var isHealthKitAuthorized = false
-    @Published var path = [MainCoordinator.Destination]()
-
-    init(
-        getWorkoutsUseCase: GetWorkoutsUseCase,
-        saveWorkoutUseCase: SaveWorkout,
-        deleteWorkoutUseCase: DeleteWorkout,
-        healthKitManager: HealthKitManager
-    ) {
-        self.getWorkoutsUseCase = getWorkoutsUseCase
-        self.saveWorkoutUseCase = saveWorkoutUseCase
-        self.deleteWorkoutUseCase = deleteWorkoutUseCase
-        self.healthKitManager = healthKitManager
-        requestHealthKitAuthorization()
+    // MARK: Model
+    enum ViewState {
+        case loading
+        case data(_ workouts: [Workout])
+        case error(Error)
     }
 
+    // MARK: Data
+    @Published var state: ViewState = .loading
+    @Published var path = [MainCoordinator.Destination]()
+
+    // MARK: Init
+    init(
+        getWorkoutsUseCase: UseCase.GetWorkouts,
+        saveWorkoutUseCase: UseCase.SaveWorkout,
+        deleteWorkoutUseCase: UseCase.DeleteWorkout,
+    ) {
+        self.getWorkoutsUseCase = getWorkoutsUseCase
+        self.deleteWorkoutUseCase = deleteWorkoutUseCase
+    }
+
+    // MARK: Actions
+    @MainActor
     func getWorkouts() async {
         do {
             let savedWorkouts = try await getWorkoutsUseCase.call()
-            DispatchQueue.main.async {
-                self.workouts = savedWorkouts
-                self.savedWorkoutIDs = Set(savedWorkouts.map { $0.id })
-            }
+            state = .data(savedWorkouts)
         } catch {
-            // Handle error
+            state = .error(error)
         }
     }
 
-    private func requestHealthKitAuthorization() {
-        healthKitManager.requestAuthorization { [weak self] success, error in
-            DispatchQueue.main.async {
-                if success {
-                    self?.isHealthKitAuthorized = true
-                    self?.fetchWorkouts()
-                } else {
-                    // Handle error or denial
-                }
-            }
-        }
-    }
-
-    private func fetchWorkouts() {
-        healthKitManager.fetchWorkouts { [weak self] workouts, error in
-            if let workouts = workouts {
-                DispatchQueue.main.async {
-                    self?.healthKitWorkouts = workouts
-                }
-            }
-        }
-    }
-
-    func save(hkWorkout: HKWorkout) {
-        Task {
-            let existingWorkouts = try await getWorkoutsUseCase.call()
-            if !existingWorkouts.contains(where: { $0.importId == hkWorkout.uuid }) {
-                let locations = try await healthKitManager.fetchRoute(for: hkWorkout)
-
-                let workout = Workout(
-                    id: UUID(),
-                    importId: hkWorkout.uuid,
-                    date: hkWorkout.endDate,
-                    duration: hkWorkout.duration,
-                    distance: hkWorkout.totalDistance?.doubleValue(for: .meter()) ?? 0,
-                    calories: hkWorkout.totalEnergyBurned?.doubleValue(for: .kilocalorie()) ?? 0,
-                    type: WorkoutType(hkWorkoutActivityType: hkWorkout.workoutActivityType),
-                    locations: locations.map { .init(from: $0) }
-                )
-                try await saveWorkoutUseCase.call(workout)
-                DispatchQueue.main.async {
-                    self.workouts.append(workout)
-                }
-            }
-        }
-    }
-    
     func workoutTapped(workout: Workout) {
         path.append(.detail(workout))
     }
 
-    func delete(at offsets: IndexSet) {
-        let workoutsToDelete = offsets.map { workouts[$0] }
-        Task {
-            for workout in workoutsToDelete {
-                try await deleteWorkoutUseCase.call(workout)
-            }
-            DispatchQueue.main.async {
-                self.workouts.remove(atOffsets: offsets)
-            }
+    func delete(workout: Workout) {
+        guard case var .data(workouts) = state else {
+            return
+        }
+        guard let index = workouts.firstIndex(of: workout) else {
+            return
+        }
+        Task { @MainActor in
+            try await deleteWorkoutUseCase.call(workout)
+            workouts.remove(atOffsets: .init(integer: index))
+            state = .data(workouts)
         }
     }
 }

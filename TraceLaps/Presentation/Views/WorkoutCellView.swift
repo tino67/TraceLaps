@@ -6,10 +6,12 @@
 //
 
 import SwiftUI
+import Entities
+import UseCases
 
 struct WorkoutCellView: View {
     let workout: Workout
-    private let getWorkoutTypeInfoUseCase: GetWorkoutTypeInfoUseCase = GetWorkoutTypeInfo()
+    private let getWorkoutTypeInfoUseCase: UseCase.GetWorkoutTypeInfo = .init()
 
     var body: some View {
         let workoutInfo = getWorkoutTypeInfoUseCase.call(for: workout.type)

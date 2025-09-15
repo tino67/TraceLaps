@@ -7,6 +7,7 @@
 
 import SwiftUI
 import MapKit
+import Entities
 
 struct MapView: View {
     let locations: [LocationPoint]

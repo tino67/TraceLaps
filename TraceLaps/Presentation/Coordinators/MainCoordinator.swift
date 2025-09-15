@@ -8,6 +8,8 @@
 import Foundation
 import SwiftUI
 import SwiftData
+import Entities
+import UseCases
 
 class MainCoordinator: Coordinator {
 
@@ -22,15 +24,10 @@ class MainCoordinator: Coordinator {
 
     @ViewBuilder
     private func buildWorkoutsView() -> some View {
-        let getWorkoutsUseCase = GetWorkouts(workoutRepository: WorkoutRepositoryImpl(localDataSource: WorkoutLocalDataSourceImpl()))
-        let saveWorkoutUseCase = SaveWorkout(workoutRepository: WorkoutRepositoryImpl(localDataSource: WorkoutLocalDataSourceImpl()))
-        let deleteWorkoutUseCase = DeleteWorkoutUseCase(workoutRepository: WorkoutRepositoryImpl(localDataSource: WorkoutLocalDataSourceImpl()))
-
-        let viewModel = WorkoutsViewModel(
-            getWorkoutsUseCase: getWorkoutsUseCase,
-            saveWorkoutUseCase: saveWorkoutUseCase,
-            deleteWorkoutUseCase: deleteWorkoutUseCase,
-            healthKitManager: HealthKitManager()
+        let viewModel: WorkoutsViewModel = .init(
+            getWorkoutsUseCase: UseCase.GetWorkouts(),
+            saveWorkoutUseCase: UseCase.SaveWorkout(),
+            deleteWorkoutUseCase: UseCase.DeleteWorkout()
         )
 
         WorkoutsView(viewModel: viewModel, coordinator: self)
@@ -40,8 +37,7 @@ class MainCoordinator: Coordinator {
     func view(for destination: Destination) -> some View {
         switch destination {
         case .detail(let workout):
-            let deleteWorkoutUseCase = DeleteWorkoutUseCase(workoutRepository: WorkoutRepositoryImpl(localDataSource: WorkoutLocalDataSourceImpl()))
-            let viewModel = WorkoutDetailViewModel(workout: workout, deleteWorkoutUseCase: deleteWorkoutUseCase)
+            let viewModel: WorkoutDetailViewModel = .init(workout: workout, deleteWorkoutUseCase: UseCase.DeleteWorkout())
             WorkoutDetailView(viewModel: viewModel)
         }
     }

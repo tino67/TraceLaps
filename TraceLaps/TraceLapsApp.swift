@@ -7,6 +7,8 @@
 
 import SwiftUI
 import SwiftData
+import Entities
+import UseCases
 
 @main
 struct TraceLapsApp: App {
@@ -29,6 +31,9 @@ struct TraceLapsApp: App {
     var body: some Scene {
         WindowGroup {
             coordinator.start()
+                .onAppear {
+                    UseCase.Start().call(TraceLapsApp.sharedModelContainer.mainContext)
+                }
         }
         .modelContainer(TraceLapsApp.sharedModelContainer)
     }

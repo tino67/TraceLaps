@@ -39,7 +39,7 @@ class HealthKitManager {
         case notDetermined, denied, authorized, notAvailable
     }
 
-    func authorizationStatus() -> AuthorizationStatus {
+    var authorizationStatus: AuthorizationStatus {
         guard HKHealthStore.isHealthDataAvailable() else {
             return .notAvailable
         }
