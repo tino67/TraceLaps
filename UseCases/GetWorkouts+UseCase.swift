@@ -6,10 +6,15 @@
 //
 
 import Foundation
+import Entities
+import RepositoryInterfaces
+internal import Dependencies
 
 extension UseCase {
     public struct GetWorkouts {
-        let workoutRepository: WorkoutRepository
+        @Dependency(\.workoutRepository) private var workoutRepository
+
+        public init() {}
 
         public func call() async throws -> [Workout] {
             try await workoutRepository.getWorkouts()

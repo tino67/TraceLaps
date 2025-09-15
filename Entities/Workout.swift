@@ -10,7 +10,7 @@ import SwiftData
 
 @Model
 public final class Workout: Sendable {
-    @Attribute(.unique) var id: UUID
+    @Attribute(.unique) public var id: UUID
     public var importId: UUID?
     public var date: Date
     public var duration: TimeInterval

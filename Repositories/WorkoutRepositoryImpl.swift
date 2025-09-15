@@ -6,23 +6,30 @@
 //
 
 import Foundation
+import Entities
+import RepositoryInterfaces
+import DataSourceInterfaces
+import SwiftData
+internal import Dependencies
 
-class WorkoutRepositoryImpl: WorkoutRepository {
-    let localDataSource: WorkoutLocalDataSource
+public class WorkoutRepositoryImpl: WorkoutRepository {
+    @Dependency(\.workoutLocalDataSource) private var workoutLocalDataSource
 
-    init(localDataSource: WorkoutLocalDataSource) {
-        self.localDataSource = localDataSource
+    public init() {}
+
+    public func start(modelContext: ModelContext) {
+        workoutLocalDataSource.start(modelContext: modelContext)
     }
 
-    func getWorkouts() async throws -> [Workout] {
-        try await localDataSource.getWorkouts()
+    public func getWorkouts() async throws -> [Workout] {
+        try await workoutLocalDataSource.getWorkouts()
     }
 
-    func saveWorkout(_ workout: Workout) async throws {
-        try await localDataSource.saveWorkout(workout)
+    public func saveWorkout(_ workout: Workout) async throws {
+        try await workoutLocalDataSource.saveWorkout(workout)
     }
 
-    func delete(workout: Workout) async throws {
-        try await localDataSource.delete(workout: workout)
+    public func delete(workout: Workout) async throws {
+        try await workoutLocalDataSource.delete(workout: workout)
     }
 }

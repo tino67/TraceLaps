@@ -10,6 +10,7 @@ import SwiftData
 import Entities
 
 public protocol WorkoutLocalDataSource {
+    func start(modelContext: ModelContext)
     func getWorkouts() async throws -> [Workout]
     func saveWorkout(_ workout: Workout) async throws
     func delete(workout: Workout) async throws

@@ -1,20 +1,18 @@
 //
-//  GetWorkoutTypeInfoUseCase.swift
+//  GetHKWorkoutTypeInfoUseCase.swift
 //  TraceLaps
 //
 //  Created by Jules on 29/07/2025.
 //
 
 import Foundation
-import Entities
-import RepositoryInterfaces
 import HealthKit
 
 extension UseCase {
-    public struct GetWorkoutTypeInfo {
+    public struct GetHKWorkoutTypeInfo {
         public init() {}
-        
-        public func call(for workoutType: WorkoutType) -> (name: String, symbol: String) {
+
+        public func call(for workoutType: HKWorkoutActivityType) -> (name: String, symbol: String) {
             switch workoutType {
             case .americanFootball:
                 return ("American Football", "sportscourt")

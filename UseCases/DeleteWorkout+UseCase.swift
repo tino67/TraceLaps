@@ -6,14 +6,15 @@
 //
 
 import Foundation
+import Entities
+import RepositoryInterfaces
+internal import Dependencies
 
 extension UseCase {
     public class DeleteWorkout {
-        private let workoutRepository: WorkoutRepository
+        @Dependency(\.workoutRepository) private var workoutRepository
 
-        public init(workoutRepository: WorkoutRepository) {
-            self.workoutRepository = workoutRepository
-        }
+        public init() {}
 
         public func call(_ workout: Workout) async throws {
             try await workoutRepository.delete(workout: workout)

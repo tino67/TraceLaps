@@ -7,22 +7,32 @@
 
 import Foundation
 import SwiftData
+import Entities
+import DataSourceInterfaces
 
-@MainActor
-struct WorkoutLocalDataSourceImpl: WorkoutLocalDataSource {
-    private let modelContext = TraceLapsApp.sharedModelContainer.mainContext
+public class WorkoutLocalDataSourceImpl: WorkoutLocalDataSource {
+    private var modelContext: ModelContext?
 
-    func getWorkouts() async throws -> [Workout] {
+    public init() {}
+
+    public func start(modelContext: ModelContext) {
+        self.modelContext = modelContext
+    }
+
+    public func getWorkouts() async throws -> [Workout] {
+        guard let modelContext else { fatalError(#function + ": modelContext is nil") }
         let descriptor = FetchDescriptor<Workout>(sortBy: [SortDescriptor(\.date, order: .reverse)])
         return try modelContext.fetch(descriptor)
     }
 
-    func saveWorkout(_ workout: Workout) async throws {
+    public func saveWorkout(_ workout: Workout) async throws {
+        guard let modelContext else { fatalError(#function + ": modelContext is nil") }
         modelContext.insert(workout)
         try modelContext.save()
     }
 
-    func delete(workout: Workout) async throws {
+    public func delete(workout: Workout) async throws {
+        guard let modelContext else { fatalError(#function + ": modelContext is nil") }
         modelContext.delete(workout)
     }
 }
