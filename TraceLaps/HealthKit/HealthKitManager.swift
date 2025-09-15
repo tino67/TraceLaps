@@ -10,22 +10,58 @@ import HealthKit
 import CoreLocation
 
 class HealthKitManager {
-    let healthStore = HKHealthStore()
+    private let healthStore = HKHealthStore()
+    private let typesToReadMandatory: Set = [
+        HKSeriesType.workoutRoute(),
+        .workoutType()
+    ]
 
-    func requestAuthorization(completion: @escaping (Bool, Error?) -> Void) {
+    enum HealthKitError: Error {
+        case notAvailable
+        case AuthorizationStatusNotDetermined
+        case AuthorizationStatusDenied
+    }
+
+    enum AuthorizationStatus {
+        fileprivate init(_ status: HKAuthorizationStatus) {
+            switch status {
+            case .notDetermined:
+                self = .notDetermined
+            case .sharingDenied:
+                self = .denied
+            case .sharingAuthorized:
+                self = .authorized
+            @unknown default:
+                self = .notDetermined
+            }
+        }
+
+        case notDetermined, denied, authorized, notAvailable
+    }
+
+    func authorizationStatus() -> AuthorizationStatus {
         guard HKHealthStore.isHealthDataAvailable() else {
-            completion(false, HealthKitError.notAvailable)
-            return
+            return .notAvailable
         }
 
-        let typesToRead: Set = [
-            HKObjectType.workoutType(),
-            HKSeriesType.workoutRoute()
-        ]
+        let authorizations: Set<HKAuthorizationStatus> = Set(typesToReadMandatory
+            .map { healthStore.authorizationStatus(for: $0) })
 
-        healthStore.requestAuthorization(toShare: nil, read: typesToRead) { success, error in
-            completion(success, error)
+        var status: AuthorizationStatus = .notDetermined
+        if authorizations.count == 1, let hkStatus = authorizations.first {
+            status = AuthorizationStatus(hkStatus)
+        } else {
+            status = .denied
         }
+
+        return status
+    }
+
+    func requestAuthorization() async throws {
+        guard HKHealthStore.isHealthDataAvailable() else {
+             throw HealthKitError.notAvailable
+        }
+        try await healthStore.requestAuthorization(toShare: [], read: typesToReadMandatory)
     }
 
     func fetchWorkouts(completion: @escaping ([HKWorkout]?, Error?) -> Void) {
@@ -94,8 +130,4 @@ private extension HealthKitManager {
             healthStore.execute(query)
         }
     }
-}
-
-enum HealthKitError: Error {
-    case notAvailable
 }

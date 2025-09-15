@@ -21,4 +21,8 @@ struct WorkoutLocalDataSourceImpl: WorkoutLocalDataSource {
         modelContext.insert(workout)
         try modelContext.save()
     }
+
+    func delete(workout: Workout) async throws {
+        modelContext.delete(workout)
+    }
 }
