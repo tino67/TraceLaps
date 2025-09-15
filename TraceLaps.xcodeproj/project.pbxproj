@@ -27,6 +27,12 @@
 		75DABFE42E4A352500F1A23E /* RepositoryInterfaces.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 75C823B82E3AB6550011A052 /* RepositoryInterfaces.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		75DABFE62E4A352F00F1A23E /* DataSourceInterfaces.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 75C824212E3AB8D50011A052 /* DataSourceInterfaces.framework */; };
 		75DABFE72E4A352F00F1A23E /* DataSourceInterfaces.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 75C824212E3AB8D50011A052 /* DataSourceInterfaces.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		75E1EE142E7845E100068AD1 /* Dependencies in Frameworks */ = {isa = PBXBuildFile; productRef = 75E1EE132E7845E100068AD1 /* Dependencies */; };
+		75E1EE162E7845EA00068AD1 /* Dependencies in Frameworks */ = {isa = PBXBuildFile; productRef = 75E1EE152E7845EA00068AD1 /* Dependencies */; };
+		75E1EE172E7847ED00068AD1 /* Repositories.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 75C823D82E3AB6D10011A052 /* Repositories.framework */; };
+		75E1EE182E7847ED00068AD1 /* Repositories.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 75C823D82E3AB6D10011A052 /* Repositories.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		75E1EE1C2E78481900068AD1 /* LocalDataSource.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 75C823E62E3AB70B0011A052 /* LocalDataSource.framework */; };
+		75E1EE1D2E78481900068AD1 /* LocalDataSource.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 75C823E62E3AB70B0011A052 /* LocalDataSource.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		75E652D92E5FA5FA00199CCF /* Dependencies in Frameworks */ = {isa = PBXBuildFile; productRef = 75E652D82E5FA5FA00199CCF /* Dependencies */; };
 		75E652DB2E5FA6B400199CCF /* Dependencies in Frameworks */ = {isa = PBXBuildFile; productRef = 75E652DA2E5FA6B400199CCF /* Dependencies */; };
 /* End PBXBuildFile section */
@@ -144,6 +150,20 @@
 			remoteGlobalIDString = 75C823D72E3AB6D10011A052;
 			remoteInfo = Repositories;
 		};
+		75E1EE192E7847ED00068AD1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 75B527CC2E38D300002CBDD5 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 75C823D72E3AB6D10011A052;
+			remoteInfo = Repositories;
+		};
+		75E1EE1E2E78481900068AD1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 75B527CC2E38D300002CBDD5 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 75C823E52E3AB70B0011A052;
+			remoteInfo = LocalDataSource;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -168,6 +188,7 @@
 			dstSubfolderSpec = 10;
 			files = (
 				75DABFE42E4A352500F1A23E /* RepositoryInterfaces.framework in Embed Frameworks */,
+				75E1EE1D2E78481900068AD1 /* LocalDataSource.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -179,6 +200,17 @@
 			dstSubfolderSpec = 10;
 			files = (
 				75DABFE72E4A352F00F1A23E /* DataSourceInterfaces.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		75E1EE1B2E7847ED00068AD1 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				75E1EE182E7847ED00068AD1 /* Repositories.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -278,6 +310,7 @@
 			files = (
 				75E652DB2E5FA6B400199CCF /* Dependencies in Frameworks */,
 				75DABFD22E4A34E500F1A23E /* RepositoryInterfaces.framework in Frameworks */,
+				75E1EE172E7847ED00068AD1 /* Repositories.framework in Frameworks */,
 				75C824052E3AB79E0011A052 /* Entities.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -303,8 +336,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				75DABFE32E4A352500F1A23E /* RepositoryInterfaces.framework in Frameworks */,
+				75E1EE1C2E78481900068AD1 /* LocalDataSource.framework in Frameworks */,
 				75DABFC82E4A336300F1A23E /* DataSourceInterfaces.framework in Frameworks */,
 				75C823F72E3AB77A0011A052 /* Entities.framework in Frameworks */,
+				75E1EE142E7845E100068AD1 /* Dependencies in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -312,6 +347,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				75E1EE162E7845EA00068AD1 /* Dependencies in Frameworks */,
 				75C8242D2E3AB8F80011A052 /* Entities.framework in Frameworks */,
 				75DABFE62E4A352F00F1A23E /* DataSourceInterfaces.framework in Frameworks */,
 			);
@@ -498,12 +534,14 @@
 				75C8239B2E3AB5CD0011A052 /* Sources */,
 				75C8239C2E3AB5CD0011A052 /* Frameworks */,
 				75C8239D2E3AB5CD0011A052 /* Resources */,
+				75E1EE1B2E7847ED00068AD1 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 				75C824082E3AB79E0011A052 /* PBXTargetDependency */,
 				75DABFD52E4A34E500F1A23E /* PBXTargetDependency */,
+				75E1EE1A2E7847ED00068AD1 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				75C823A02E3AB5CD0011A052 /* UseCases */,
@@ -580,12 +618,14 @@
 				75C823FA2E3AB77A0011A052 /* PBXTargetDependency */,
 				75C8241A2E3AB8930011A052 /* PBXTargetDependency */,
 				75DABFCB2E4A336300F1A23E /* PBXTargetDependency */,
+				75E1EE1F2E78481900068AD1 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				75C823D92E3AB6D10011A052 /* Repositories */,
 			);
 			name = Repositories;
 			packageProductDependencies = (
+				75E1EE132E7845E100068AD1 /* Dependencies */,
 			);
 			productName = Repositories;
 			productReference = 75C823D82E3AB6D10011A052 /* Repositories.framework */;
@@ -612,6 +652,7 @@
 			);
 			name = LocalDataSource;
 			packageProductDependencies = (
+				75E1EE152E7845EA00068AD1 /* Dependencies */,
 			);
 			productName = LocalDataSource;
 			productReference = 75C823E62E3AB70B0011A052 /* LocalDataSource.framework */;
@@ -929,6 +970,16 @@
 			isa = PBXTargetDependency;
 			target = 75C823D72E3AB6D10011A052 /* Repositories */;
 			targetProxy = 75DABFE12E4A350200F1A23E /* PBXContainerItemProxy */;
+		};
+		75E1EE1A2E7847ED00068AD1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 75C823D72E3AB6D10011A052 /* Repositories */;
+			targetProxy = 75E1EE192E7847ED00068AD1 /* PBXContainerItemProxy */;
+		};
+		75E1EE1F2E78481900068AD1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 75C823E52E3AB70B0011A052 /* LocalDataSource */;
+			targetProxy = 75E1EE1E2E78481900068AD1 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -1712,6 +1763,16 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		75E1EE132E7845E100068AD1 /* Dependencies */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 75E652D72E5FA5FA00199CCF /* XCRemoteSwiftPackageReference "swift-dependencies" */;
+			productName = Dependencies;
+		};
+		75E1EE152E7845EA00068AD1 /* Dependencies */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 75E652D72E5FA5FA00199CCF /* XCRemoteSwiftPackageReference "swift-dependencies" */;
+			productName = Dependencies;
+		};
 		75E652D82E5FA5FA00199CCF /* Dependencies */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 75E652D72E5FA5FA00199CCF /* XCRemoteSwiftPackageReference "swift-dependencies" */;

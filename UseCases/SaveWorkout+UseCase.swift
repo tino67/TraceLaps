@@ -14,6 +14,8 @@ extension UseCase {
     public struct SaveWorkout {
         @Dependency(\.workoutRepository) private var workoutRepository
 
+        public init() {}
+
         public func call(_ workout: Workout) async throws {
             try await workoutRepository.saveWorkout(workout)
         }

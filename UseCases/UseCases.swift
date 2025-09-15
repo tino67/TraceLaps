@@ -6,5 +6,6 @@
 //
 
 import Foundation
+import SwiftData
 
 public enum UseCase {}
